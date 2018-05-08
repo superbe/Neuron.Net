@@ -66,5 +66,58 @@ namespace Neuron.Net.Core.Tests
 			double actual = Activation.Radial(3);
 			Assert.AreEqual(expected, actual, 0.000000001);
 		}
+
+		[TestMethod]
+		public void SemilinearSTestMethod()
+		{
+			double expected = 1;
+			double actual = Activation.SemilinearS(3);
+			Assert.AreEqual(expected, actual);
+			expected = 0;
+			actual = Activation.SemilinearS(-3);
+			Assert.AreEqual(expected, actual);
+			expected = 0.5;
+			actual = Activation.SemilinearS(0.5);
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestMethod]
+		public void LinearSTestMethod()
+		{
+			double expected = 1;
+			double actual = Activation.LinearS(3);
+			Assert.AreEqual(expected, actual);
+			expected = -1;
+			actual = Activation.LinearS(-3);
+			Assert.AreEqual(expected, actual);
+			expected = 0.5;
+			actual = Activation.LinearS(0.5);
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestMethod]
+		public void HyperbolicTestMethod()
+		{
+			double expected = 0.995054753686731;
+			double actual = Activation.Hyperbolic(3);
+			Assert.AreEqual(expected, actual, 0.000000001);
+		}
+
+		[TestMethod]
+		public void TriangularTestMethod()
+		{
+			double expected = 0;
+			double actual = Activation.Triangular(3);
+			Assert.AreEqual(expected, actual, 0.000000001);
+			expected = 0;
+			actual = Activation.Triangular(-3);
+			Assert.AreEqual(expected, actual);
+			expected = 0.5;
+			actual = Activation.Triangular(0.5);
+			Assert.AreEqual(expected, actual);
+			expected = 0.5;
+			actual = Activation.Triangular(-0.5);
+			Assert.AreEqual(expected, actual);
+		}
 	}
 }

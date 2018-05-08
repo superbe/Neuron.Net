@@ -40,8 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivationD.cs" />
     <Compile Include="Activation.cs" />
+    <Compile Include="Mfn.cs" />
+    <Compile Include="Perceptron.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PairValue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
