@@ -1,11 +1,15 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Neuron.Net.Core
 {
 	/// <summary>
 	/// Перцептрон имени Розенблата.
 	/// </summary>
-	public class Perceptron
+	[Serializable]
+	public class Perceptron : Base
 	{
 		// Матрица весовых коэффициентов.
 		private double[,] _w;
@@ -74,6 +78,12 @@ namespace Neuron.Net.Core
 		/// <param name="cardinality">Количество персептронов на слое.</param>
 		/// <param name="activation">Функция активации.</param>
 		/// <param name="activationD">Производная функции активации.</param>
+
+		private Perceptron()
+		{
+
+		}
+
 		public Perceptron(int inputIardinality, int cardinality, Func<double, double> activation, Func<double, double> activationD = null)
 		{
 			// Матрица весовых коэффициентов.
@@ -286,6 +296,92 @@ namespace Neuron.Net.Core
 		public Perceptron Dublicat()
 		{
 			return _theta == null ? new Perceptron(Dublicat(_w), _activation, _activationD) : new Perceptron(Dublicat(_w), _activationThreshold, (double)_theta, _activationD);
+		}
+
+		/// <summary>
+		/// Сохранить файл.
+		/// </summary>
+		/// <param name="fileName">Наименование сохраняемого файла.</param>
+		public void Save(string fileName)
+		{
+			try
+			{
+				string extension = Path.GetExtension(fileName).ToLower();
+				if (extension != ".nnp") throw new ArgumentException(string.Format("Задано неправильное расширение файла: '{0}'.", fileName), "fileName");
+				File.WriteAllBytes(fileName, ToBinary());
+			}
+			catch (Exception exception)
+			{
+				throw new Exception("Ошибка сохранения в файл.", exception);
+			}
+		}
+
+		/// <summary>
+		/// Загрузить файл.
+		/// </summary>
+		/// <param name="fileName">Наименование загружаемого файла.</param>
+		/// <returns>Загруженная десериализованный перцептрон.</returns>
+		public static Perceptron Load(string fileName)
+		{
+			try
+			{
+				string extension = Path.GetExtension(fileName).ToLower();
+				if (extension != ".nnp") throw new ArgumentException(string.Format("Задано неправильное расширение файла: '{0}'.", fileName), "fileName");
+				return FromBinary(File.ReadAllBytes(fileName));
+			}
+			catch (Exception exception)
+			{
+				throw new Exception("Ошибка загрузки из файла.", exception);
+			}
+		}
+
+		// Сериализация в бинарный формат.
+		private byte[] ToBinary()
+		{
+			IFormatter formatter = new BinaryFormatter();
+			using (var stream = new MemoryStream())
+			{
+				byte[] result;
+				try
+				{
+					formatter.Serialize(stream, this);
+					result = stream.GetBuffer();
+				}
+				catch (Exception exception)
+				{
+					//Logger.Implementation().Error(exception, string.Empty);
+					throw new Exception("Ошибка сериализации.", exception);
+				}
+				finally
+				{
+					stream.Close();
+				}
+				return result;
+			}
+		}
+
+		// Десериализация из бинарного формата.
+		private static Perceptron FromBinary(byte[] data)
+		{
+			IFormatter formatter = new BinaryFormatter();
+			using (var stream = new MemoryStream(data))
+			{
+				Perceptron result;
+				try
+				{
+					result = (Perceptron)formatter.Deserialize(stream);
+				}
+				catch (Exception exception)
+				{
+					//Logger.Implementation().Error(exception, string.Empty);
+					throw new Exception("Ошибка сериализации.", exception);
+				}
+				finally
+				{
+					stream.Close();
+				}
+				return result;
+			}
 		}
 	}
 }

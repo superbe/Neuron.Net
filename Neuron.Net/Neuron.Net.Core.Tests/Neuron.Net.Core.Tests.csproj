@@ -55,12 +55,16 @@
     <Compile Include="ActivationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PerceptronTest.cs" />
+    <Compile Include="UtilTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Neuron.Net.Core\Neuron.Net.Core.csproj">
       <Project>{834FB4FB-2458-45BB-BDA0-914A57EE52A6}</Project>
       <Name>Neuron.Net.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\Test.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

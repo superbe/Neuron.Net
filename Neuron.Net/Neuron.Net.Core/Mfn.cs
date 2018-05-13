@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Neuron.Net.Core
 {
 	/// <summary>
 	/// Многослойная сеть с прямой связью (глубокая нейросеть).
 	/// </summary>
-	public class Mfn
+	[Serializable]
+	public class Mfn : Base
 	{
 		// Слои.
 		private Perceptron[] _layers;
@@ -21,6 +25,12 @@ namespace Neuron.Net.Core
 		/// Ошибка обучения.
 		/// </summary>
 		public double Error { get { return _error; } }
+
+		private Mfn()
+		{
+
+		}
+
 
 		/// <summary>
 		/// Конструктор. Первая перегрузка.
@@ -200,6 +210,92 @@ namespace Neuron.Net.Core
 				result.AddLayer(_layers[i].Dublicat());
 			}
 			return result;
+		}
+
+		/// <summary>
+		/// Сохранить файл.
+		/// </summary>
+		/// <param name="fileName">Наименование сохраняемого файла.</param>
+		public void Save(string fileName)
+		{
+			try
+			{
+				string extension = Path.GetExtension(fileName).ToLower();
+				if (extension != ".nnn") throw new ArgumentException(string.Format("Задано неправильное расширение файла: '{0}'.", fileName), "fileName");
+				File.WriteAllBytes(fileName, ToBinary());
+			}
+			catch (Exception exception)
+			{
+				throw new Exception("Ошибка сохранения в файл.", exception);
+			}
+		}
+
+		/// <summary>
+		/// Загрузить файл.
+		/// </summary>
+		/// <param name="fileName">Наименование загружаемого файла.</param>
+		/// <returns>Загруженная десериализованная многослойная нейронная сеть с прямой связью.</returns>
+		public static Mfn Load(string fileName)
+		{
+			try
+			{
+				string extension = Path.GetExtension(fileName).ToLower();
+				if (extension != ".nnn") throw new ArgumentException(string.Format("Задано неправильное расширение файла: '{0}'.", fileName), "fileName");
+				return FromBinary(File.ReadAllBytes(fileName));
+			}
+			catch (Exception exception)
+			{
+				throw new Exception("Ошибка загрузки из файла.", exception);
+			}
+		}
+
+		// Сериализация в бинарный формат.
+		private byte[] ToBinary()
+		{
+			IFormatter formatter = new BinaryFormatter();
+			using (var stream = new MemoryStream())
+			{
+				byte[] result;
+				try
+				{
+					formatter.Serialize(stream, this);
+					result = stream.GetBuffer();
+				}
+				catch (Exception exception)
+				{
+					//Logger.Implementation().Error(exception, string.Empty);
+					throw new Exception("Ошибка сериализации.", exception);
+				}
+				finally
+				{
+					stream.Close();
+				}
+				return result;
+			}
+		}
+
+		// Десериализация из бинарного формата.
+		private static Mfn FromBinary(byte[] data)
+		{
+			IFormatter formatter = new BinaryFormatter();
+			using (var stream = new MemoryStream(data))
+			{
+				Mfn result;
+				try
+				{
+					result = (Mfn)formatter.Deserialize(stream);
+				}
+				catch (Exception exception)
+				{
+					//Logger.Implementation().Error(exception, string.Empty);
+					throw new Exception("Ошибка сериализации.", exception);
+				}
+				finally
+				{
+					stream.Close();
+				}
+				return result;
+			}
 		}
 	}
 }
