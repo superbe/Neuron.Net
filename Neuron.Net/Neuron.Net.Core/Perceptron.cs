@@ -201,7 +201,7 @@ namespace Neuron.Net.Core
 				for (int j = 0; j < lengthj; j++)
 				{
 					double activationD = _activationD(_net[i]);
-					_delta[i, j] = inertial * _delta[i, j] + (activationD == double.NaN && _sigma[i] == 1 ? -1 : 1) * norm * _error[i] * _x[j];
+					_delta[i, j] = inertial * _delta[i, j] + (double.IsNaN(activationD) && _sigma[i] == 1 ? -1 : 1) * norm * _error[i] * _x[j];
 					_w[i, j] += _delta[i, j];
 				}
 			}
@@ -220,7 +220,7 @@ namespace Neuron.Net.Core
 			for (int i = 0; i < t.Length; i++)
 			{
 				double activationD = _activationD(_net[i]);
-				_error[i] = activationD == double.NaN ? (t[i] == _sigma[i] ? 0 : 1) : ((t[i] - _sigma[i]) * activationD);
+				_error[i] = double.IsNaN(activationD) ? (t[i] == _sigma[i] ? 0 : 1) : ((t[i] - _sigma[i]) * activationD);
 			}
 			// Рассчитали входной сигнал.
 			for (int j = 0; j < result.Length; j++)
@@ -255,7 +255,7 @@ namespace Neuron.Net.Core
 			for (int i = 0; i < delta.Length; i++)
 			{
 				double activationD = _activationD(_net[i]);
-				_error[i] = activationD == double.NaN ? (delta[i] == _sigma[i] ? 0 : 1) : delta[i] * activationD;
+				_error[i] = double.IsNaN(activationD) ? (delta[i] == _sigma[i] ? 0 : 1) : delta[i] * activationD;
 			}
 			// Рассчитали входной сигнал.
 			for (int j = 0; j < result.Length; j++)
